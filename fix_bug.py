@@ -1,6 +1,6 @@
 '''
 
-python3 main.py "src/datasets/pickles/20newsgroups_mwl3.pkl"
+python3 main.py 
 
 pip install -r requirements.txt
 '''

@@ -1,56 +1,11 @@
-import argparse
-from src.networks.decoder_network import DecoderNetwork as Model
-from src.networks.decoder_network import NetworkConfigs as ModelConfig
 from src.networks.rltm import RLTM
-from src.utils.config import TrainConfig
-from src.datasets.dataset import get_datapipe
+from src.utils.config import ModelParameters
 
 
-def main(pickle_name, use_test_data):
-    pickle_name = pickle_name.rstrip('.pkl').replace('\\', '/')
-
-    model_config = ModelConfig()
-    assert pickle_name == model_config.pickle_name
-    model = Model(model_config)
-
-    train_dataset = get_datapipe(pickle_name, 'train',
-                                 frozen_embeddings=model_config.frozen_embeddings,
-                                 sbert_model=model_config.sbert_model,
-                                 hugface_model=model_config.hugface_model,
-                                 max_length=model_config.max_length)
-
-    if use_test_data:
-        test_dataset = get_datapipe(pickle_name, 'test',
-                                    frozen_embeddings=model_config.frozen_embeddings,
-                                    sbert_model=model_config.sbert_model,
-                                    hugface_model=model_config.hugface_model,
-                                    max_length=model_config.max_length)
-    else:
-        test_dataset = None
-
-    train_config = TrainConfig()
-    trainer = RLTM(model=model,
-                      train_dataset=train_dataset,
-                      test_dataset=test_dataset,
-                      train_config=train_config)
-
-    trainer.distributed_train()
-
-
+def main(pickle_name):
+    model_parameters = ModelParameters()
+    local_model = RLTM(pickle_name, model_parameters=model_parameters)
+    
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument(
-        'dataset', 
-        type=str, 
-        help='Data pickle file to train with.'
-    )
-    parser.add_argument(
-        '--test', 
-        action='store_true', 
-        help='Use a test/validation data subset.'
-    )
-
-    args = parser.parse_args()
-
-    main(args.dataset, args.test)
+    pickle_name = "src/datasets/pickles/20newsgroups_mwl3"
+    main(pickle_name)

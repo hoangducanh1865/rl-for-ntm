@@ -28,17 +28,17 @@ class ModelParameters:
         # dataloader
         self.batch_size = 1024
         self.num_workers = 0
-        self.deterministic_dataloader = False
+        self.deterministic_dataloader = True
         self.seed = 0
         # training
         self.max_epochs = 1000
         self.grad_norm_clip = 1.0
-        self.lr_decay = False
+        self.lr_decay = True
         self.ckpt_path = 'src/networks/ckpt'
         self.experiment_name = '20newsgroups_mwl3'
         self.experiment_num = 0
         self.check_experiment_path = True
-        self.save_outputs = True
+        self.save_outputs = False
         self.save_pickle_every = 0
         
         

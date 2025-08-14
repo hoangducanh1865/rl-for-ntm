@@ -6,7 +6,7 @@ import pandas as pd
 from cycler import cycler
 import matplotlib.pyplot as plt
 
-from trainer.utils import get_save_num
+from src.utils.utils import get_save_num
 
 
 result_location = 'evals/ntm_runs'

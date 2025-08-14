@@ -4,9 +4,9 @@ from tqdm import tqdm
 from gensim.corpora import Dictionary
 from gensim.models.coherencemodel import CoherenceModel
 
-from trainer.utils import get_save_num
-from data.dataset import get_dataset
-from evals.measures import get_topic_words_from_files, topic_diversity, NPMICoherence, InvertedRBO, CoherenceWordEmbeddings
+from src.utils.utils import get_save_num
+from src.datasets.dataset import get_dataset
+from src.evaluation.measures import get_topic_words_from_files, topic_diversity, NPMICoherence, InvertedRBO, CoherenceWordEmbeddings
 
 
 my_parser = argparse.ArgumentParser()

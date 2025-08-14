@@ -8,6 +8,7 @@ from src.utils.utils import get_scheduler, step_scheduler
 from src.config.config import DEVICE
 from src.networks.decoder_network import DecoderNetwork
 from src.datasets.dataset import get_datapipe
+from src.networks.Server import Server
 
 
 logger = logging.getLogger(__name__)
@@ -72,6 +73,10 @@ class RLTM:
 
             model.zero_grad()
             loss.backward()
+
+            server = Server(scale = 0.6)
+            server.tuning_gradient(model)
+
             if self.model_parameters.grad_norm_clip is not None:
                 torch.nn.utils.clip_grad_norm_(model.parameters(), self.model_parameters.grad_norm_clip)
             optimizer.step()

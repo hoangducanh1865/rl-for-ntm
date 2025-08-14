@@ -1,8 +1,29 @@
 import os
 import torch
 import torch.nn as nn
-import src.utils.config as config
+import math
 from src.datasets.dataset import get_dataset
+
+
+
+class LRDecayer:
+    def __init__(self):
+        self.tokens = 0
+        self.warmup_tokens = 0
+        self.final_tokens = 3e6
+
+    def decay_learning_rate(self, batch):
+        self.tokens += (batch[1] >= 0).sum()
+        if self.tokens < self.warmup_tokens:
+            # linear warmup
+            lr_mult = float(self.tokens) / float(max(1, self.warmup_tokens))
+        else:
+            # cosine learning rate decay
+            progress_numerator = float(self.tokens - self.warmup_tokens)
+            progress_denominator = float(max(1, self.final_tokens - self.warmup_tokens))
+            progress = progress_numerator / progress_denominator
+            lr_mult = max(1 / 3, 0.5 * (1.0 + math.cos(math.pi * progress)))
+        return lr_mult
 
 
 def configure_optimizers(model, train_config):
@@ -39,7 +60,9 @@ def configure_optimizers(model, train_config):
         {'params': [param_dict[pn] for pn in sorted(list(no_decay))], 'weight_decay': 0.0}
     ]
 
-    optimizer = config.get_optimizer(optim_groups, train_config)
+    optimizer = torch.optim.AdamW(optim_groups,
+                             lr=train_config.learning_rate,
+                             betas=train_config.betas)
     return optimizer
 
 
@@ -164,3 +187,12 @@ class ExperimentModelConfig:
     def get_sparse_corpus_bow(self):
         dataset_save_dict = get_dataset(self.pickle_name)
         self.sparse_corpus_bow = dataset_save_dict['sparse_corpus_bow']
+
+
+# no LR scheduling used in paper
+def get_scheduler(optimizer):
+    return torch.optim.lr_scheduler.LinearLR(optimizer)
+
+
+def step_scheduler(scheduler):
+    scheduler.step()

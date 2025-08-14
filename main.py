@@ -1,5 +1,5 @@
 from src.networks.rltm import RLTM
-from src.utils.config import ModelParameters
+from src.config.config import ModelParameters
 
 
 def main(pickle_name):

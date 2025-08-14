@@ -9,7 +9,7 @@ from torch.utils.data.dataloader import DataLoader
 from torch.utils.data.distributed import DistributedSampler
 from tqdm import tqdm
 from src.evaluation.plotting import Outputs, save_training_outputs
-from src.utils.config import get_scheduler, step_scheduler
+from src.utils.utils import get_scheduler, step_scheduler
 from src.config.config import DEVICE
 from src.networks.decoder_network import DecoderNetwork
 from src.datasets.dataset import get_datapipe
@@ -40,7 +40,7 @@ class RLTM:
             output_dict = model(batch)
             loss = output_dict['loss']
                 
-            return output_dict, loss
+            return loss
     
     def train_epoch_local_model(self, model, optimizer, scheduler, device, epoch):
         """Train one complete epoch and return output dict."""
@@ -72,7 +72,7 @@ class RLTM:
         losses = []
         pbar = tqdm(enumerate(loader), total=len(loader))
         for it, batch in pbar:
-            output_dict, loss = self._train_minibatch(model, batch, device, epoch, it)
+            loss = self._train_minibatch(model, batch, device, epoch, it)
             losses.append(loss.item())
 
             model.zero_grad()
@@ -85,7 +85,7 @@ class RLTM:
             pbar.set_description(f"epoch {epoch} iter {it}: train loss {loss.item():.5f}. lr {lr:e}")
 
         if self.model_parameters.lr_decay:
-            step_scheduler(scheduler, output_dict)
+            step_scheduler(scheduler)
     
     def __train_local_model(self):
         """Main training loop for local model."""

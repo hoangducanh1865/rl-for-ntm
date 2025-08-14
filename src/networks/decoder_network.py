@@ -3,7 +3,6 @@ import torch.nn as nn
 import src.utils.utils as utils
 from torch.distributions.normal import Normal
 from src.networks.other_networks import LDA, ProdLDA, ThetaVAE, ThetaRL, InputBOW, InputBERT, InputCAT
-from src.datasets.dataset import get_dataset
 from src.networks.inference_network import InferenceNetwork, NoisyInferenceNetwork
 from src.evaluation.measures import NPMICoherence, topic_diversity, calculate_perplexity_batch
 

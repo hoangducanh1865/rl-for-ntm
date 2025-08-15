@@ -73,10 +73,28 @@ class RLTM:
 
             model.zero_grad()
             loss.backward()
+            print("Start debug in rltm.py")
+            
+            old_params = []
+            for param in model.parameters():
+                grad = param.grad
+                old_params.append(grad.clone())
+            
 
             server = Server(scale = 0.6)
             server.tuning_gradient(model)
 
+            new_params = []
+            for param in model.parameters():
+                grad = param.grad
+                new_params.append(grad.clone())
+
+            for old_grad, new_grad in zip(old_params, new_params):
+                print(new_grad/old_grad)
+            
+                
+            
+            print("end debug in rltm.py")
             if self.model_parameters.grad_norm_clip is not None:
                 torch.nn.utils.clip_grad_norm_(model.parameters(), self.model_parameters.grad_norm_clip)
             optimizer.step()
